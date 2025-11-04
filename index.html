@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>七年级历史选择题小游戏</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            padding: 20px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .info-item {
+            text-align: center;
+            flex: 1;
+        }
+        .info-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .question-container {
+            margin-bottom: 30px;
+            padding: 25px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .question-image {
+            text-align: center;
+            margin: 15px 0;
+        }
+        .question-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .options {
+            margin-left: 10px;
+        }
+        .option {
+            margin-bottom: 10px;
+            padding: 12px 15px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        .option:hover {
+            background-color: #e8f4fd;
+            transform: translateX(5px);
+        }
+        .option.selected {
+            background-color: #d1ecf1;
+            border-left: 4px solid #3498db;
+        }
+        .option.correct {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .explanation {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e8f4fd;
+            border-radius: 8px;
+            display: none;
+            border-left: 4px solid #3498db;
+        }
+        .explanation.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        .explanation h4 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 8px rgba(0,0,0,0.15);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .result {
+            text-align: center;
+            margin-top: 30px;
+            padding: 30px;
+            background-color: #e8f4fd;
+            border-radius: 10px;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .result.show {
+            display: block;
+            animation: fadeIn 0.8s;
+        }
+        .result h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .score-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #3498db;
+            margin: 20px 0;
+        }
+        .score-text {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .progress-bar {
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+        .celebrate {
+            font-size: 24px;
+            color: #e74c3c;
+            margin: 10px 0;
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .question-number {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+        }
+        .image-placeholder {
+            background-color: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>七年级历史选择题小游戏</h1>
+            <p class="subtitle">巩固历史知识 · 提升学习兴趣</p>
+        </div>
+        
+        <div class="game-info">
+            <div class="info-item">
+                <div class="info-label">当前题目</div>
+                <div class="info-value"><span id="current-question">1</span>/<span id="total-questions">20</span></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">得分</div>
+                <div class="info-value"><span id="score">0</span>/20</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">进度</div>
+                <div class="info-value"><span id="progress-percent">5</span>%</div>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress-bar" style="width: 5%;"></div>
+        </div>
+        
+        <div id="question-container"></div>
+        
+        <div class="buttons">
+            <button id="prev-btn" disabled>上一题</button>
+            <button id="submit-btn">提交答案</button>
+            <button id="next-btn">下一题</button>
+        </div>
+        
+        <div id="result" class="result">
+            <h2>测试完成!</h2>
+            <div class="celebrate">🎉 恭喜完成所有题目 🎉</div>
+            <div class="score-display"><span id="final-score">0</span>/20</div>
+            <p class="score-text" id="score-message">继续努力，你可以做得更好！</p>
+            <button id="restart-btn">重新开始挑战</button>
+        </div>
+    </div>
+
+    <script>
+        // 完整的20道题目数据
+        const questions = [
+            {
+                id: 1,
+                text: "要了解生活在距今约70万---20万年的我国早期人类代表------北京人的生产生活状况，可信度最高的是（ ）",
+                options: [
+                    "A．神话传说",
+                    "B．考古发现",
+                    "C．传世文献",
+                    "D．影视作品"
+                ],
+                correctAnswer: 1,
+                explanation: "根据所学知识可知，考古发现是第一手史料，了解我国早期人类的代表之一的北京人的生存状况可信度最高的方式是考古发现，B项正确；神话传说带有夸张和虚构成分，可信度不高，排除A项；传世文献属于后人编写，可信度不如考古发现，排除C项；影视作品属于艺术创造，史料价值较低，排除D项。"
+            },
+            {
+                id: 2,
+                text: "下图是王府井古人类文化遗址，于1996年发现，距今约2.4-2.5万年，是古人类生活、狩猎的地方，有丰富的用火遗迹、打制石器、动物化石等，是世界范围内首次在国际大都市中心发现的古人类文化遗存。下列文化遗址和王府井古人类遗址同一个考古时期的是（ ）",
+                image: "media/image2.png",
+                options: [
+                    "A．①②③",
+                    "B．①③④",
+                    "C．②③④",
+                    "D．①②④"
+                ],
+                correctAnswer: 0,
+                explanation: "据材料'距今约2.4-2.5万年，是古人类生活、狩猎的地方，有丰富的用火遗迹、打制石器、动物化石等'可知，此文化遗址属于旧石器时代，而北京人距今约七十万年至二十万年，属于旧石器时代，①符合题意；元谋人距今170万年，属于旧石器时代，②符合题意；蓝田人的生活年代大约距今70万年至115万年之间，属于旧石器时代，③符合题意；半坡人距今时间五六千年，属于新石器时代，④不符题意。选择A项。"
+            },
+            {
+                id: 3,
+                text: "以下北京地区的考古发现与结论对应正确的是（ ）",
+                table: {
+                    headers: ["序号", "考古发现", "结论"],
+                    rows: [
+                        ["①", "北京人遗址：灰烬、烧石和烧骨等", "会使用磨制石器"],
+                        ["②", "山顶洞人遗址：穿孔骨针", "会建干栏式房屋"],
+                        ["③", "门头沟东胡林遗址：距今10000-8000年栽培粟和黍的遗存", "原始农业形成"],
+                        ["④", "平谷上宅遗址：距今约7000年前的陶器", "贫富分化出现"]
+                    ]
+                },
+                options: [
+                    "A．①",
+                    "B．②",
+                    "C．③",
+                    "D．④"
+                ],
+                correctAnswer: 2,
+                explanation: "据所学知识可知，距今1万年左右，我国出现了最早的人工栽培的农作物，北方地区的先民开始栽培粟和黍，证明原始农业形成，为人类文明做出了重要贡献，③考古发现与结论对应正确，C项正确；北京人采用打制石器的方法，制作不同类型的工具，处于旧石器时代，北京人遗址：灰烬、烧石和烧骨等，反映北京人已经学会使用火，还会长时间保留很火种，①考古发现与结论对应错误，排除A项；山顶洞人遗址：穿孔骨针，表明山顶洞人已掌握钻孔技术和磨光技术，干栏式房屋属于河姆渡人的建筑，②考古发现与结论对应错误，排除B项；上宅村发掘的石器和陶器，在当时是生产工具和生活用具，在今天则是远古文化的标志，但未体现出贫富分化，④考古发现与结论对应错误，排除D项。"
+            },
+            {
+                id: 4,
+                text: "下图是《公元前7000---公元前5000年中国两大农业区示意图》，对该示意图解读正确的是（ ）",
+                image: "media/image3.png",
+                options: [
+                    "A．①②区域先民主要使用打制石器",
+                    "B．①区域先民的房屋是干栏式建筑",
+                    "C．②区域先民种植的主要农作物是粟",
+                    "D．①②区域先民已进入原始农耕生活"
+                ],
+                correctAnswer: 3,
+                explanation: "根据所学可知，公元前7000---公元前5000年我国已经进入到新石器时代，结合材料中的地理位置可得出，这一时期我国形成了南稻北粟的农业格局，①是黄河流域，②是长江流域，①②区域分别对应粟作农业区和稻作农业区，两个区域先民已进入原始农耕生活，D项正确；①②区域已经进行到新石器时代，先民主要使用磨制石器，排除A项；①区域先民的房屋是半地穴式建筑，排除B项；②区域先民种植的主要农作物是稻，排除C项。"
+            },
+            {
+                id: 5,
+                text: "下图是内蒙古赤峰市出土的玉龙，距今5000年左右，被考古界誉为'中华第一龙'。在距今8000---3000年间的史前时期在中国各地发掘出不同形态、不同材质组成的龙的形象，这说明（ ）",
+                image: "media/image4.png",
+                options: [
+                    "A．龙是真实存在的",
+                    "B．原始先民地域统一的表现",
+                    "C．龙是部落的首领",
+                    "D．原始先民对龙崇拜的表现"
+                ],
+                correctAnswer: 3,
+                explanation: "根据材料'在距今8000---3000年间的史前时期在中国各地发掘出不同形态、不同材质组成的龙的形象'可知，在远古时期的先民对龙的崇拜，以其作为图腾崇拜，D项正确；材料无法证实龙是真实存在的，排除A项；原始先民对于龙的崇拜在材料中并没有体现出地域统一，排除B项；部落首领是有能力且贤德的人当选，排除C项。"
+            },
+            {
+                id: 6,
+                text: "《史记》记载：黄帝'与炎帝战于阪泉之野......黄帝乃征师诸侯，与蚩尤战于涿鹿之野，遂禽杀蚩尤。而诸侯咸尊轩辕为天子，代神农氏，是为黄帝。'上述记载提供的历史信息是（ ）",
+                options: [
+                    "A．炎帝和黄帝的发明创造",
+                    "B．部落间的攻伐与部落联盟的形成",
+                    "C．中国早期国家的产生",
+                    "D．炎帝部落与蚩尤部落的具体位置"
+                ],
+                correctAnswer: 1,
+                explanation: "根据题干'与炎帝战于阪泉之野......黄帝乃征师诸侯，与蚩尤战于涿鹿之野，遂禽杀蚩尤。而诸侯咸尊轩辕为天子，代神农氏，是为黄帝'和所学知识可知，上述记载提供的历史信息体现了部落间的攻伐与部落联盟的形成，B项正确；材料没有涉及炎帝和黄帝的发明创造，不符合题意，排除A项；中国早期国家的产生为夏朝，不符合题意，排除C项；材料没有涉及炎帝部落与蚩尤部落的具体位置，排除D项。"
+            },
+            {
+                id: 7,
+                text: "西周时期周王为巩固疆土，根据血缘关系远近和功劳大小，确立的社会等级制度示意图如下。此制度是（ ）",
+                image: "media/image5.png",
+                options: [
+                    "A．禅让制",
+                    "B．世袭制",
+                    "C．分封制",
+                    "D．皇帝制"
+                ],
+                correctAnswer: 2,
+                explanation: "根据材料信息'西周时期周王为巩固疆土，根据血缘关系远近和功劳大小，确立的社会等级制度'并结合所学知识，西周建立以后，为巩固统治，周天子把土地和平民、奴隶分给亲属、功臣等，封他们为诸侯。诸侯必须服从周天子的命令，向周天子缴纳贡品，平时镇守疆土，战时随天子作战，这一制度是分封制，C项正确；尧舜禹时期实行禅让制，排除A项；夏朝启实行王位世袭制，排除B项；秦始皇确立皇帝制度，排除D项。"
+            },
+            {
+                id: 8,
+                text: "以下实物史料可作为夏、商、西周时期文明发展证据的是（ ）",
+			    image: "media/image6.png",
+                options: [
+                    "A．①②③",
+                    "B．①②④",
+                    "C．①③④",
+                    "D．②③④"
+                ],
+                correctAnswer: 0,
+                explanation: "根据题干和所学知识可知，①考古学者在洛阳平原发掘出年代相当于夏王朝后期的一座都城遗址------二里头遗址，这里有宫殿建筑群、大型墓葬和手工业作坊，还有平民生活区和墓葬群，反映了夏王朝的阶级分化和等级界限，因此二里头遗址出土的铜鼎可以反映夏朝的情况，①正确；殷墟位于今河南安阳，原本是商王盘庚迁徙后的都城，直至商朝灭亡，因此殷墟出土的甲骨可以反映商朝的情况，②正确；据材料'珷（武）征商'可知，利簋可以反映武王伐纣的情况，与商周有关，③正确；商鞅变法是在战国时期，与夏商西周文明发展无关，④错误。①③④符合题意，A项正确。"
+            },
+            {
+                id: 9,
+                text: "下图是小明同学的部分历史笔记。请你帮他补全笔记中横线部分的内容（ ）",
+                image: "media/image7.png",
+                options: [
+                    "A．铁制农具和牛耕的推广",
+                    "B．各诸侯国展开争霸战争",
+                    "C．兼并战争连绵不断",
+                    "D．政治秩序重新确立"
+                ],
+                correctAnswer: 0,
+                explanation: "结合所学可知，东周包括春秋和战国两个时期，此时是由奴隶社会向封建社会转变的大变革时期，铁制农具和牛耕推广，兼并战争在客观上促进了国家由分裂走向统一，各国进行变法，学术思想活跃，各种学说蓬勃兴起，出现了百家争鸣的局面，A项正确；各诸侯国展开争霸战争是春秋时期，而且属于军事方面，与经济无关，排除B项；兼并战争连绵不断属于军事方面，与经济无关，排除C项；政治思想秩序重新确立属于政治方面，不属于经济方面，排除D项。"
+            },
+            {
+                id: 10,
+                text: "春秋时期的许多历史事件后来被凝练成了成语典故，例如'老马识途''卧薪尝胆''一鸣惊人''退避三舍'等。这些成语反映出这一时期的特点是（ ）",
+                options: [
+                    "A．'家天下'出现",
+                    "B．诸侯争霸，战争不断",
+                    "C．中外交往繁盛",
+                    "D．政治清明，经济发达"
+                ],
+                correctAnswer: 1,
+                explanation: "根据题干''老马识途''卧薪尝胆''一鸣惊人''退避三舍'等'等成语信息和所学知识可知，这些成语都与战争、策略和争霸有关，它们反映了春秋时期各个诸侯国之间的争斗和竞争，以及各国君主和将领们在战争中运用智慧和策略的情景，B项正确；'家天下'出现是夏朝，排除A项；这些成语典故主要涉及的是内部的政治和军事事件，与对外交往繁盛关系不大，排除C项；春秋时期各诸侯国间常发生战争和冲突，社会动荡不安，并非政治清明和经济发达，排除D项。"
+            },
+            {
+                id: 11,
+                text: "战国时期各国纷纷变法，不同程度地打击了旧制度、旧贵族势力，解放了社会生产力，推动了社会的发展、转型。其中，成效最大的是（ ）",
+                options: [
+                    "A．齐国管仲改革",
+                    "B．魏国李悝变法",
+                    "C．楚国吴起变法",
+                    "D．秦国商鞅变法"
+                ],
+                correctAnswer: 3,
+                explanation: "根据题干中关键词'成效最大'切入，秦国的秦孝公即位以后，任用商鞅进行变法改革。各国的变法运动都给各诸侯国带来了一定的进步，但只有秦国自此之后，灭六国统一中原，D项正确；齐国管仲改革促进齐桓公成为一代霸主，但不符合'成效最大'，排除A项；魏国李悝变法、楚国吴起变法成效都不如商鞅变法大，排除BC项。"
+            },
+            {
+                id: 12,
+                text: "以下资料卡片是某同学摘录的商鞅变法内容。这些措施产生的共同影响是（ ）",
+				image: "media/image8.png",
+                options: [
+                    "A．确立了封建土地制度",
+                    "B．加强了对地方的控制",
+                    "C．使秦国国力大为增强",
+                    "D．加强了对人民的管理"
+                ],
+                correctAnswer: 2,
+                explanation: "根据所学知识，'鼓励耕织，生产粮食、布帛多的人可免除徭役'促进秦国的经济发展，达到富国的目的；'奖励军功，对有军功者授予爵位并赏赐土地'有利于提高秦国的战斗力，达到强兵的目的，所以，这些措施产生的共同影响是使秦国国力大为增强，C项正确；材料中没有体现废除井田制，所以无法推断确立了封建土地制度，排除A项；材料中没有涉及到推行县制，所以不能推断出加强对地方的控制，排除B项；材料中没有涉及到编订户口的相关内容，所以未体现出加强了对人民的管理，排除D项。"
+            },
+            {
+                id: 13,
+                text: "春秋战国时期是社会大动荡时期，也是学术思想活跃时期，各种学说兴起。与下面示意图所示思想主张对应正确的是（ ）",
+                image: "media/image10.png",
+                options: [
+                    "A．道家学派------老子",
+                    "B．儒家学派------孔子",
+                    "C．墨家学派------墨子",
+                    "D．法家学派------韩非子"
+                ],
+                correctAnswer: 1,
+                explanation: "根据所学可知，春秋晚期，孔子创办儒家学派，主张仁者爱人，以德治国，有教无类，与材料内容相符合，B项正确；道家学派的老子主张无为而治，排除A项；墨子主张兼爱、非攻，排除C项；法家学派韩非子主张以法治国，建立君主专制中央集权体制，排除D项。"
+            },
+            {
+                id: 14,
+                text: "下列诸子百家人物与思想主张，对应正确的有（ ）",
+                options: [
+                    "①孟子主张实行'兼爱''非攻' ②庄子强调治国要顺应自然和民心",
+                    "③荀子提倡'礼治' ④韩非子强调'以法治国'",
+                    "A．①②③",
+                    "B．②③④",
+                    "C．①③④",
+                    "D．①②④"
+                ],
+                correctAnswer: 1,
+                explanation: "结合所学知识，战国时期出现了百家争鸣的局面，其中庄子强调治国要顺应自然和民心，荀子提倡'礼治'，韩非子强调'以法治国'，所以②③④对应正确，B项正确；主张实行'兼爱''非攻'的是墨子，所以①对应错误，排除ACD项。"
+            },
+            {
+                id: 15,
+                text: "中国已发现的古代文字中年代最早、体系较为完整的是（ ）",
+                options: [
+                    "A．甲骨文",
+                    "B．小篆",
+                    "C．隶书",
+                    "D．楷书"
+                ],
+                correctAnswer: 0,
+                explanation: "根据题干和所学知识可知，商周时期的甲骨文是中国已发现的古代文字中年代最早、体系较为完整的文字，对中国文字的形成与发展有深远影响，A项正确；小篆是秦朝通行全国的文字，隶书起源于秦朝，由程邈整理而成，三国钟繇独创楷书书法，BCD都不符合题意，排除BCD项。"
+            },
+            {
+                id: 16,
+                text: "司母戊鼎，是迄今世界上出土的最重的青铜器，重达832.84千克。铸造这样硕大的器物，工艺十分复杂，需要很多人协同合作才能完成。上述材料说明商朝（ ）",
+                options: [
+                    "①青铜器广泛应用于农业生产 ②青铜铸造技艺高超",
+                    "③青铜铸造业规模非常宏大 ④青铜铸造业分工细致",
+                    "A．①②③",
+                    "B．①②④",
+                    "C．①③④",
+                    "D．②③④"
+                ],
+                correctAnswer: 3,
+                explanation: "根据材料'工艺十分复杂'得出青铜铸造技艺高超，根据'需要很多人协同合作才能完成'结合所学可知，青铜铸造业规模非常宏大且分工细致，需多人一同操作，②③④正确，D项正确；青铜器广泛应用于农业生产从材料中无法体现，排除有①的选项，排除ABC项。"
+            },
+            {
+                id: 17,
+                text: "秦始皇命李斯等人制定笔画规整的小篆（如下图），作为通用文字颁行全国。该措施（ ）",
+                image: "media/image11.png",
+                options: [
+                    "A．结束了争战的局面",
+                    "B．拓展了秦朝的疆域",
+                    "C．便利了交通的往来",
+                    "D．有利于政令的推行"
+                ],
+                correctAnswer: 3,
+                explanation: "根据所学知识，统一文字，使政令能够在全国各地顺利推行，也使不同地域的人民能够顺畅沟通，有利于文化的交流与发展，D项正确；秦的统一，结束了争战的局面，排除A项；统一文字属于文化措施，不能拓展疆域，排除B项；秦朝修建直道和驰道便利了交通的往来，排除C项。"
+            },
+            {
+                id: 18,
+                text: "下侧是一位同学的课堂笔记，其中①处应填写的内容是（ ）",
+                image: "media/image9.png",
+                options: [
+                    "A．交通事业的发展",
+                    "B．统治疆域的拓展",
+                    "C．巩固统一的措施",
+                    "D．王国问题的解决"
+                ],
+                correctAnswer: 2,
+                explanation: "根据课堂笔记内容结合所学知识可知，这些内容都是秦始皇为建立民族大一统国家采取的巩固统一的措施。政治上：秦朝建立大一统的中央集权制度，在地方上实行郡县制；经济上：统一货币、度量衡；文化上：统一文字；交通上：统一车轨、修驰道；军事上：秦始皇派大将蒙恬北击匈奴，修筑了西起临洮，东到辽东的长城。C项正确；交通事业的发展属于秦始皇巩固统一的措施之一，排除A项；统治疆域的拓展属于秦始皇巩固统一的措施之一，排除B项；王国问题的解决是在汉武帝时期，排除D项。"
+            },
+            {
+                id: 19,
+                text: "公元前219年，秦始皇下令兴修沟通湘水与漓水的运河------灵渠。这一做法的目的是（ ）",
+                image: "media/image12.png",
+                options: [
+                    "A．服务统一岭南的需要",
+                    "B．推进中原农耕技术向南传播",
+                    "C．贯通南北交通的驰道",
+                    "D．振兴桂林和象郡的经济文化"
+                ],
+                correctAnswer: 0,
+                explanation: "结合所学知识可知，秦始皇在统一东南、岭南地区的时候，为解决运输困难，秦始皇派人开凿了灵渠，沟通湘江和漓江，把长江和珠江两大水系连接起来，A项正确；推进中原农耕技术向南传播，对应江南地区的开发，与灵渠开凿联系不大，排除B项；灵渠的开凿是贯通南北水运交通，驰道是陆路，排除C项；灵渠的开凿旨在征服岭南地区，与振兴桂林和象郡的经济文化没有直接联系，而且桂林和象郡是在统一岭南后设立的郡，排除D项。"
+            },
+            {
+                id: 20,
+                text: "以下措施中与秦朝灭亡直接相关的是（ ）",
+                options: [
+                    "①赋税沉重 ②与民争利，引起'国人暴动' ③法律严苛 ④大规模地征调民力",
+                    "A．①②③",
+                    "B．①③④",
+                    "C．②③④",
+                    "D．①②④"
+                ],
+                correctAnswer: 1,
+                explanation: "根据题干和结合所学知识可知，秦朝灭亡是因为实行暴政。①对农民征收沉重的赋税；③秦朝实行的法律非常严苛，民众稍有不慎即触犯法律，而且一人犯法，亲族和邻里都要受到牵连；④连年在全国大规模地征调民力服徭役和兵役，如修建骊山陵和阿房宫役使70多万人，征伐南方调发了50万士卒，修筑长城征派了40万人，①③④正确，B项正确；②是西周灭亡的原因之一，②错误，排除ACD项。"
+            }
+        ];
+
+        // 初始化变量
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        
+        // DOM元素
+        const questionContainer = document.getElementById('question-container');
+        const currentQuestionSpan = document.getElementById('current-question');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const scoreSpan = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = document.getElementById('progress-percent');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultDiv = document.getElementById('result');
+        const finalScoreSpan = document.getElementById('final-score');
+        const scoreMessage = document.getElementById('score-message');
+        const restartBtn = document.getElementById('restart-btn');
+        
+        // 初始化
+        totalQuestionsSpan.textContent = questions.length;
+        updateProgressBar();
+        displayQuestion(currentQuestionIndex);
+        
+        // 显示题目
+        function displayQuestion(index) {
+            const question = questions[index];
+            currentQuestionSpan.textContent = index + 1;
+            
+            let questionHTML = `
+                <div class="question-container">
+                    <div class="question-text"><span class="question-number">${question.id}</span>${question.text}</div>
+            `;
+            
+            // 如果有图片
+            if (question.image) {
+                questionHTML += `
+                    <div class="question-image">
+                        <img src="${question.image}" alt="题目图片" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'image-placeholder\\'>图片加载失败，请确保图片文件在正确路径下</div>';">
+                    </div>
+                `;
+            }
+            
+            // 如果有表格
+            if (question.table) {
+                let tableHTML = '<table><thead><tr>';
+                question.table.headers.forEach(header => {
+                    tableHTML += `<th>${header}</th>`;
+                });
+                tableHTML += '</tr></thead><tbody>';
+                
+                question.table.rows.forEach(row => {
+                    tableHTML += '<tr>';
+                    row.forEach(cell => {
+                        tableHTML += `<td>${cell}</td>`;
+                    });
+                    tableHTML += '</tr>';
+                });
+                
+                tableHTML += '</tbody></table>';
+                questionHTML += tableHTML;
+            }
+            
+            // 选项
+            questionHTML += '<div class="options">';
+            question.options.forEach((option, i) => {
+                const isSelected = userAnswers[index] === i;
+                const isCorrect = userAnswers[index] !== null && i === question.correctAnswer;
+                const isIncorrect = userAnswers[index] !== null && userAnswers[index] === i && userAnswers[index] !== question.correctAnswer;
+                
+                let className = 'option';
+                if (isSelected) className += ' selected';
+                if (isCorrect) className += ' correct';
+                if (isIncorrect) className += ' incorrect';
+                
+                questionHTML += `<div class="${className}" data-index="${i}">${option}</div>`;
+            });
+            questionHTML += '</div>';
+            
+            // 解析
+            const showExplanation = userAnswers[index] !== null;
+            questionHTML += `
+                <div class="explanation ${showExplanation ? 'show' : ''}">
+                    <h4>解析</h4>
+                    <p><strong>正确答案: ${question.options[question.correctAnswer]}</strong></p>
+                    <p>${question.explanation}</p>
+                </div>
+            `;
+            
+            questionHTML += '</div>';
+            questionContainer.innerHTML = questionHTML;
+            
+            // 添加选项点击事件
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    if (userAnswers[currentQuestionIndex] === null) {
+                        document.querySelectorAll('.option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                        userAnswers[currentQuestionIndex] = parseInt(this.getAttribute('data-index'));
+                        submitBtn.disabled = false;
+                    }
+                });
+            });
+            
+            // 更新按钮状态
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === questions.length - 1;
+            submitBtn.disabled = userAnswers[index] !== null;
+            
+            updateProgressBar();
+        }
+        
+        // 更新进度条
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressPercent.textContent = Math.round(progress);
+        }
+        
+        // 提交答案
+        submitBtn.addEventListener('click', function() {
+            if (userAnswers[currentQuestionIndex] === null) {
+                alert('请先选择一个答案！');
+                return;
+            }
+            
+            const currentQuestion = questions[currentQuestionIndex];
+            if (userAnswers[currentQuestionIndex] === currentQuestion.correctAnswer) {
+                score++;
+                scoreSpan.textContent = score;
+            }
+            
+            // 显示解析
+            document.querySelector('.explanation').classList.add('show');
+            
+            // 禁用提交按钮
+            submitBtn.disabled = true;
+            
+            // 如果所有题目都完成了
+            if (userAnswers.every(answer => answer !== null)) {
+                showResult();
+            }
+        });
+        
+        // 下一题
+        nextBtn.addEventListener('click', function() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion(currentQuestionIndex);
+            }
+        });
+        
+        // 上一题
+        prevBtn.addEventListener('click', function() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion(currentQuestionIndex);
+            }
+        });
+        
+        // 显示结果
+        function showResult() {
+            resultDiv.classList.add('show');
+            finalScoreSpan.textContent = score;
+            
+            // 根据得分显示不同消息
+            if (score >= 18) {
+                scoreMessage.textContent = "太棒了！你对历史知识掌握得非常扎实！";
+            } else if (score >= 15) {
+                scoreMessage.textContent = "很好！你的历史知识掌握得不错，继续加油！";
+            } else if (score >= 12) {
+                scoreMessage.textContent = "还不错！再多复习一下，你会更出色！";
+            } else {
+                scoreMessage.textContent = "继续努力，多复习历史知识，下次会更好！";
+            }
+        }
+        
+        // 重新开始
+        restartBtn.addEventListener('click', function() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            scoreSpan.textContent = score;
+            resultDiv.classList.remove('show');
+            displayQuestion(currentQuestionIndex);
+        });
+    </script>
+</body>
+</html>
